@@ -1,7 +1,7 @@
 FROM eclipse-temurin:21-jdk
 
 RUN apt-get update && \
-    apt-get install -y nginx openssh-server
+    apt-get install -y nginx openssh-server php-cli
 
 RUN mkdir -p /var/run/sshd
 
