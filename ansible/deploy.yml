@@ -1,0 +1,56 @@
+---
+- name: Build and Deploy Spring Boot Project
+  hosts: web
+  gather_facts: false
+
+  vars:
+    project_dir: "{{ playbook_dir }}/.."
+
+  tasks:
+
+    - name: Git Pull Latest Changes
+      shell: git pull
+      args:
+        chdir: "{{ project_dir }}"
+      register: git_pull
+
+    - name: Show Git Pull Output
+      debug:
+        var: git_pull.stdout_lines
+
+    - name: Build Project using Maven
+      shell: ./mvnw clean package -DskipTests
+      args:
+        chdir: "{{ project_dir }}"
+      register: build_result
+
+    - name: Show Build Output
+      debug:
+        var: build_result.stdout_lines
+
+    - name: Run Tests
+      shell: ./mvnw test
+      args:
+        chdir: "{{ project_dir }}"
+      register: test_result
+
+    - name: Show Test Output
+      debug:
+        var: test_result.stdout_lines
+
+    - name: Backup MySQL Database
+      shell: >
+        docker exec B-Hak_Sengkea-db
+        mysqldump -uroot -p123 B-Hak_Sengkea-db
+        > backup.sql
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Verify Backup Exists
+      stat:
+        path: "{{ project_dir }}/backup.sql"
+      register: backup_file
+
+    - name: Show Backup Status
+      debug:
+        var: backup_file.stat.exists
