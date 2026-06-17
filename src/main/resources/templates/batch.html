@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Batch export</title>
+    <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+<nav class="topbar">
+    <span class="brand">🪪 ID Card Generator</span>
+    <a href="/profiles">Profiles</a>
+    <a href="/profiles/new">New Profile</a>
+    <a href="/batch">Batch Export</a>
+</nav>
+<div class="container">
+    <h1>Batch ID Card Export</h1>
+
+    <div class="panel">
+        <h2>Quick export by group</h2>
+        <p class="muted">Generate a single multi-page PDF for an entire group.</p>
+        <div class="actions">
+            <a class="btn" href="/api/batch/cards.pdf">All profiles</a>
+            <a class="btn secondary" href="/api/batch/cards.pdf?type=STUDENT">STUDENT only</a>
+            <a class="btn secondary" href="/api/batch/cards.pdf?type=EMPLOYEE">EMPLOYEE only</a>
+            <a class="btn secondary" href="/api/batch/cards.pdf?type=USER">USER only</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Custom selection</h2>
+        <p class="muted">Tick the profiles to include, then export.</p>
+        <table>
+            <thead>
+            <tr>
+                <th><input type="checkbox" id="checkAll" style="width:auto;"/></th>
+                <th>Reg. No.</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Department</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${profiles}">
+                <td><input type="checkbox" class="rowChk" th:value="${p.id}" style="width:auto;"/></td>
+                <td th:text="${p.registrationNumber}">2026-MAR-001</td>
+                <td th:text="${p.fullName}">David Lim</td>
+                <td th:text="${p.type}">EMPLOYEE</td>
+                <td th:text="${p.department}">Marketing</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(profiles)}">
+                <td colspan="5" style="text-align: center; color: var(--muted); padding: 24px;">No profiles available.</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="actions" th:if="${not #lists.isEmpty(profiles)}">
+            <button class="btn" id="exportBtn" type="button">⬇ Export selected PDF</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('checkAll').addEventListener('change', function () {
+        document.querySelectorAll('.rowChk').forEach(c => c.checked = this.checked);
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', function () {
+        const ids = Array.from(document.querySelectorAll('.rowChk:checked')).map(c => Number(c.value));
+        if (ids.length === 0) { alert('Select at least one profile.'); return; }
+        fetch('/api/batch/cards.pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ids)
+        }).then(r => {
+            if (!r.ok) throw new Error();
+            return r.blob();
+        }).then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'id-cards-batch.pdf';
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+        }).catch(() => alert('Export failed.'));
+    });
+</script>
+</body>
+</html>

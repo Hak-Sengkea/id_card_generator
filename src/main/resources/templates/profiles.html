@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Profiles</title>
+    <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+<nav class="topbar">
+    <span class="brand">🪪 ID Card Generator</span>
+    <a href="/profiles">Profiles</a>
+    <a href="/profiles/new">New Profile</a>
+    <a href="/batch">Batch Export</a>
+</nav>
+<div class="container">
+    <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 style="margin:0;">Profiles</h1>
+            <a class="btn" href="/profiles/new">+ New Profile</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <table>
+            <thead>
+            <tr>
+                <th>Reg. No.</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Department</th>
+                <th>Template</th>
+                <th style="text-align:right;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${profiles}">
+                <td th:text="${p.registrationNumber}">2026-MAR-001</td>
+                <td th:text="${p.fullName}" style="font-weight: 500;">David Lim</td>
+                <td>
+                    <span class="badge" th:classappend="${p.type.name().toLowerCase()}" th:text="${p.type}">EMPLOYEE</span>
+                </td>
+                <td th:text="${p.department}">Marketing</td>
+                <td th:text="${p.template != null ? p.template.name : 'Classic Blue'}">Modern Teal</td>
+                <td style="text-align:right; white-space:nowrap;">
+                    <a class="btn small secondary" th:href="@{/profiles/{id}/card(id=${p.id})}">Card</a>
+                    <a class="btn small secondary" th:href="@{/profiles/{id}/edit(id=${p.id})}">Edit</a>
+                    <a class="btn small" th:href="@{/api/profiles/{id}/card.pdf(id=${p.id})}">PDF</a>
+                    <form th:action="@{/profiles/{id}/delete(id=${p.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('Delete this profile?');">
+                        <button class="btn small danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(profiles)}">
+                <td colspan="6" style="text-align: center; color: var(--muted); padding: 24px;">No profiles found. Create one above!</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

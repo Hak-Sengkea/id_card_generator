@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ID card</title>
+    <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+<nav class="topbar">
+    <span class="brand">🪪 ID Card Generator</span>
+    <a href="/profiles">Profiles</a>
+    <a href="/profiles/new">New Profile</a>
+    <a href="/batch">Batch Export</a>
+</nav>
+<div class="container">
+    <div class="grid" th:with="tpl=${profile.template != null ? profile.template : T(com.example.demo.model.Template).builder().primaryColor('#1d4ed8').secondaryColor('#e0e7ff').textColor('#111827').layout('VERTICAL').organizationName('ORGANIZATION').tagline('').build()}">
+        <!-- ============ CARD VIEW ============ -->
+        <div class="panel">
+            <h1 style="margin-top:0;">ID Card</h1>
+            <div class="card-wrap">
+                <!-- Vertical / Horizontal layout dynamic classes -->
+                <div class="idcard" th:classappend="${tpl.layout == 'HORIZONTAL'} ? 'horizontal'" th:style="'color: ' + ${tpl.textColor}">
+
+                    <div class="hd" th:style="'background: ' + ${tpl.primaryColor}">
+                        <div class="org" th:text="${#strings.toUpperCase(tpl.organizationName)}">ORDERZONE CORP</div>
+                        <div class="tag" th:text="${tpl.tagline}">Building the future</div>
+                        <span class="pill" th:style="'color: ' + ${tpl.primaryColor}" 
+                              th:text="${profile.type == T(com.example.demo.model.ProfileType).STUDENT} ? 'STUDENT ID' : (${profile.type == T(com.example.demo.model.ProfileType).EMPLOYEE} ? 'EMPLOYEE ID' : 'MEMBER ID')">EMPLOYEE ID</span>
+                    </div>
+
+                    <div class="bd">
+                        <!-- Horizontal content layouts support -->
+                        <th:block th:if="${tpl.layout == 'HORIZONTAL'}">
+                            <div>
+                                <img class="photo" th:if="${profile.photoFileName != null}" 
+                                     th:src="@{/media/photo/{id}(id=${profile.id})}" alt="photo" th:style="'border: 2px solid ' + ${tpl.primaryColor}"/>
+                                <div class="placeholder" th:if="${profile.photoFileName == null}" style="height:116px; width: 96px; display:flex; align-items:center; justify-content:center;">No photo</div>
+                                <div class="assets" style="margin-top: 10px; text-align: center;">
+                                    <img th:src="@{/media/qr/{id}(id=${profile.id})}" width="65" height="65" alt="QR" style="margin: 0 auto; display: block;"/>
+                                </div>
+                            </div>
+                            <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                                <div class="name" th:text="${profile.fullName}">David Lim</div>
+                                <div class="sub" th:text="${profile.title}">Senior Manager</div>
+                                <div class="info" style="margin-top: 6px;">
+                                    <div><span class="k" th:style="'color: ' + ${tpl.primaryColor}">ID No.</span><span th:text="${profile.registrationNumber}">2026-MAR-001</span></div>
+                                    <div th:if="${profile.department != null && !profile.department.isEmpty()}"><span class="k" th:style="'color: ' + ${tpl.primaryColor}">Dept.</span><span th:text="${profile.department}">Marketing</span></div>
+                                    <div th:if="${profile.bloodGroup != null && !profile.bloodGroup.isEmpty()}"><span class="k" th:style="'color: ' + ${tpl.primaryColor}">Blood</span><span th:text="${profile.bloodGroup}">A+</span></div>
+                                    <div th:if="${profile.expiryDate != null}"><span class="k" th:style="'color: ' + ${tpl.primaryColor}">Valid</span><span th:text="${#temporals.format(profile.expiryDate, 'dd MMM yyyy')}">17 Jun 2028</span></div>
+                                </div>
+                                <div class="assets" style="margin-top: auto;">
+                                    <img th:src="@{/media/barcode/{id}(id=${profile.id})}" width="160" height="28" alt="barcode" style="margin: 0 auto; display: block;"/>
+                                </div>
+                            </div>
+                        </th:block>
+
+                        <th:block th:if="${tpl.layout != 'HORIZONTAL'}">
+                            <div>
+                                <img class="photo" th:if="${profile.photoFileName != null}" 
+                                     th:src="@{/media/photo/{id}(id=${profile.id})}" alt="photo" th:style="'border: 2px solid ' + ${tpl.primaryColor}"/>
+                                <div class="placeholder" th:if="${profile.photoFileName == null}" style="height:116px; display:flex; align-items:center; justify-content:center;">No photo</div>
+                            </div>
+                            <div class="name" th:text="${profile.fullName}">David Lim</div>
+                            <div class="sub" th:text="${profile.title}">Senior Manager</div>
+                            <div class="info">
+                                <div><span class="k" th:style="'color: ' + ${tpl.primaryColor}">ID No.</span><span th:text="${profile.registrationNumber}">2026-MAR-001</span></div>
+                                <div th:if="${profile.department != null && !profile.department.isEmpty()}"><span class="k" th:style="'color: ' + ${tpl.primaryColor}">Dept.</span><span th:text="${profile.department}">Marketing</span></div>
+                                <div th:if="${profile.bloodGroup != null && !profile.bloodGroup.isEmpty()}"><span class="k" th:style="'color: ' + ${tpl.primaryColor}">Blood</span><span th:text="${profile.bloodGroup}">A+</span></div>
+                                <div th:if="${profile.expiryDate != null}"><span class="k" th:style="'color: ' + ${tpl.primaryColor}">Valid</span><span th:text="${#temporals.format(profile.expiryDate, 'dd MMM yyyy')}">17 Jun 2028</span></div>
+                            </div>
+                            <div class="assets">
+                                <img th:src="@{/media/qr/{id}(id=${profile.id})}" width="65" height="65" alt="QR" style="margin-bottom: 6px;"/>
+                                <img th:src="@{/media/barcode/{id}(id=${profile.id})}" width="180" height="30" alt="barcode"/>
+                            </div>
+                        </th:block>
+                    </div>
+
+                    <div class="ft" th:style="'background: ' + ${tpl.primaryColor}" th:text="'Verify: /verify/' + ${profile.uuid}">Verify: /verify/ab428736-f350-4a40-a584-9695c5f61da5</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ DETAILS PANEL ============ -->
+        <div class="panel">
+            <h2>Details</h2>
+            <table>
+                <tr><th>Registration</th><td th:text="${profile.registrationNumber}">2026-MAR-001</td></tr>
+                <tr><th>UUID</th><td style="font-size:11px;" th:text="${profile.uuid}">ab428736-f350-4a40-a584-9695c5f61da5</td></tr>
+                <tr><th>Type</th><td th:text="${profile.type}">EMPLOYEE</td></tr>
+                <tr><th>Name</th><td th:text="${profile.fullName}">David Lim</td></tr>
+                <tr><th>Department</th><td th:text="${profile.department != null && !profile.department.isEmpty() ? profile.department : 'N/A'}">Marketing</td></tr>
+                <tr><th>Title</th><td th:text="${profile.title != null && !profile.title.isEmpty() ? profile.title : 'N/A'}">Senior Manager</td></tr>
+                <tr><th>Email</th><td th:text="${profile.email != null && !profile.email.isEmpty() ? profile.email : 'N/A'}">david.lim@orderzone.net</td></tr>
+                <tr><th>Template</th><td th:text="${tpl.name}">Modern Teal</td></tr>
+                <tr><th>Barcode</th><td th:text="${profile.barcodeType}">CODE_128</td></tr>
+            </table>
+
+            <div class="actions">
+                <a class="btn" th:href="@{/api/profiles/{id}/card.pdf(id=${profile.id})}">⬇ Download PDF</a>
+                <a class="btn secondary" th:href="@{/profiles/{id}/edit(id=${profile.id})}">Edit</a>
+                <a class="btn secondary" href="/profiles">All profiles</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+:root {
+    --bg: #f1f5f9;
+    --panel: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --brand: #1d4ed8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.topbar {
+    background: #0f172a;
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.topbar .brand { font-weight: 700; font-size: 18px; }
+.topbar a { color: #cbd5e1; font-size: 14px; }
+.topbar a:hover { color: #fff; text-decoration: none; }
+
+.container { max-width: 1040px; margin: 24px auto; padding: 0 20px; }
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+}
+
+h1 { font-size: 22px; margin: 0 0 16px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+
+.flash {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+
+.btn {
+    display: inline-block;
+    border: 1px solid var(--brand);
+    background: var(--brand);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.btn:hover { filter: brightness(1.05); text-decoration: none; }
+.btn.secondary { background: #fff; color: var(--brand); }
+.btn.danger { background: #dc2626; border-color: #dc2626; }
+.btn.small { padding: 5px 10px; font-size: 12px; }
+
+.grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+
+label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 4px; }
+input, select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.error { color: #dc2626; font-size: 12px; margin-top: 4px; }
+.actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.badge.student { background: #dbeafe; color: #1e40af; }
+.badge.employee { background: #dcfce7; color: #166534; }
+.badge.user { background: #fef9c3; color: #854d0e; }
+
+/* ---- ID card visual (shared by live preview & saved preview) ---- */
+.card-wrap { display: flex; justify-content: center; }
+.idcard {
+    width: 280px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    background: #fff;
+    font-size: 12px;
+}
+.idcard.horizontal { width: 440px; }
+.idcard .hd { padding: 12px; text-align: center; color: #fff; }
+.idcard .hd .org { font-weight: 700; font-size: 14px; letter-spacing: .03em; }
+.idcard .hd .tag { font-size: 9px; opacity: .9; }
+.idcard .hd .pill { display: inline-block; margin-top: 6px; background: #fff; padding: 2px 8px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+.idcard .bd { padding: 14px; text-align: center; }
+.idcard.horizontal .bd { display: flex; gap: 14px; text-align: left; }
+.idcard .photo { width: 96px; height: 116px; object-fit: cover; border-radius: 6px; border: 2px solid; margin: 0 auto; display: block; background: #e2e8f0; }
+.idcard .name { font-weight: 700; font-size: 15px; margin-top: 8px; }
+.idcard .sub { font-size: 11px; color: #475569; }
+.idcard .info { margin-top: 8px; font-size: 11px; }
+.idcard .info div { display: flex; justify-content: space-between; gap: 8px; padding: 1px 0; }
+.idcard .info .k { font-weight: 700; }
+.idcard .assets { margin-top: 10px; }
+.idcard .assets img { display: block; margin: 6px auto 0; }
+.idcard .ft { padding: 6px; text-align: center; color: #fff; font-size: 8px; word-break: break-all; }
+.muted { color: var(--muted); font-size: 12px; }
+.placeholder { background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 14px; color: #94a3b8; font-size: 10px; }
+.swatches { display: flex; gap: 6px; }
+.swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,.1); }

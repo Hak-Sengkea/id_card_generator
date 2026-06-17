@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Identity Verification</title>
+    <link rel="stylesheet" href="/css/app.css"/>
+    <style>
+        .verify-card {
+            max-width: 500px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        .status-badge {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .status-valid {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        .status-invalid {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+    </style>
+</head>
+<body>
+<nav class="topbar">
+    <span class="brand">🪪 ID Card Generator</span>
+    <a href="/profiles">Profiles</a>
+    <a href="/profiles/new">New Profile</a>
+    <a href="/batch">Batch Export</a>
+</nav>
+<div class="container">
+    <div class="panel verify-card">
+        <h1 style="margin-top:0;">Identity Verification</h1>
+
+        <!-- If Profile exists -->
+        <th:block th:if="${profile != null}">
+            <div class="status-badge status-valid">
+                ✅ VALID IDENTITY VERIFIED
+            </div>
+            
+            <table style="text-align: left; margin-top: 10px;">
+                <tr><th style="width: 140px;">Name</th><td th:text="${profile.fullName}">David Lim</td></tr>
+                <tr><th>Registration No.</th><td th:text="${profile.registrationNumber}">2026-MAR-001</td></tr>
+                <tr><th>Profile Type</th><td th:text="${profile.type}">EMPLOYEE</td></tr>
+                <tr><th>Department</th><td th:text="${profile.department != null && !profile.department.isEmpty() ? profile.department : 'N/A'}">Marketing</td></tr>
+                <tr><th>Title</th><td th:text="${profile.title != null && !profile.title.isEmpty() ? profile.title : 'N/A'}">Senior Manager</td></tr>
+                <tr th:if="${profile.expiryDate != null}">
+                    <th>Expiry Date</th>
+                    <td th:text="${#temporals.format(profile.expiryDate, 'dd MMM yyyy')}">17 Jun 2028</td>
+                </tr>
+            </table>
+        </th:block>
+
+        <!-- If Profile does not exist -->
+        <th:block th:if="${profile == null}">
+            <div class="status-badge status-invalid">
+                ❌ INVALID IDENTIFIER
+            </div>
+            <p class="muted" style="margin-top: 15px; font-size: 14px; line-height: 1.5;">
+                The scanned identifier <strong th:text="${uuid}">uuid</strong> could not be verified in the system. 
+                The card might be fake, modified, or has been deactivated.
+            </p>
+        </th:block>
+
+        <div class="actions" style="justify-content: center; margin-top: 30px;">
+            <a class="btn" href="/profiles">Go to Directory</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

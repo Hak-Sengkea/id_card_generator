@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Profile form</title>
+    <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+<nav class="topbar">
+    <span class="brand">🪪 ID Card Generator</span>
+    <a href="/profiles">Profiles</a>
+    <a href="/profiles/new">New Profile</a>
+    <a href="/batch">Batch Export</a>
+</nav>
+<div class="container">
+    <h1 th:text="${isEdit} ? 'Edit profile' : 'New profile'">New profile</h1>
+
+    <div class="grid">
+        <!-- ============ FORM ============ -->
+        <div class="panel">
+            <form th:action="${isEdit} ? @{/profiles/{id}(id=${profile.id})} : @{/profiles}"
+                  method="post" enctype="multipart/form-data" id="profileForm">
+
+                <label>Profile type</label>
+                <select id="f-type" name="type">
+                    <option value="STUDENT" th:selected="${profile.type == T(com.example.demo.model.ProfileType).STUDENT}">STUDENT</option>
+                    <option value="EMPLOYEE" th:selected="${profile.type == T(com.example.demo.model.ProfileType).EMPLOYEE}">EMPLOYEE</option>
+                    <option value="USER" th:selected="${profile.type == T(com.example.demo.model.ProfileType).USER}">USER</option>
+                </select>
+
+                <label>Full name</label>
+                <input type="text" id="f-name" placeholder="Jane Doe" name="fullName" th:value="${profile.fullName}"/>
+
+                <div class="row2">
+                    <div>
+                        <label>Department</label>
+                        <input type="text" id="f-dept" placeholder="Engineering" name="department" th:value="${profile.department}"/>
+                    </div>
+                    <div>
+                        <label>Title / Program</label>
+                        <input type="text" id="f-title" placeholder="Senior Manager" name="title" th:value="${profile.title}"/>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div>
+                        <label>Email</label>
+                        <input type="email" placeholder="jane@orderzone.net" id="email" name="email" th:value="${profile.email}"/>
+                    </div>
+                    <div>
+                        <label>Phone</label>
+                        <input type="text" id="phone" name="phone" th:value="${profile.phone}"/>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div>
+                        <label>Blood group</label>
+                        <input type="text" id="f-blood" placeholder="O+" name="bloodGroup" th:value="${profile.bloodGroup}"/>
+                    </div>
+                    <div>
+                        <label>Date of birth</label>
+                        <input type="date" id="f-dob" name="dateOfBirth" th:value="${profile.dateOfBirth}"/>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div>
+                        <label>Issue date</label>
+                        <input type="date" id="issueDate" name="issueDate" th:value="${profile.issueDate}"/>
+                    </div>
+                    <div>
+                        <label>Expiry date</label>
+                        <input type="date" id="expiryDate" name="expiryDate" th:value="${profile.expiryDate}"/>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div>
+                        <label>Template / theme</label>
+                        <select id="f-template" name="templateCode">
+                            <option th:each="t : ${templates}"
+                                    th:value="${t.code}"
+                                    th:text="${t.name}"
+                                    th:data-primary="${t.primaryColor}"
+                                    th:data-secondary="${t.secondaryColor}"
+                                    th:data-text="${t.textColor}"
+                                    th:data-layout="${t.layout}"
+                                    th:data-org="${t.organizationName}"
+                                    th:data-tag="${t.tagline}"
+                                    th:selected="${profile.template != null ? profile.template.code == t.code : t.code == 'classic'}">
+                                Classic Blue
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Barcode type</label>
+                        <select id="f-barcode" name="barcodeType">
+                            <option value="CODE_128" th:selected="${profile.barcodeType == T(com.example.demo.model.BarcodeType).CODE_128}">CODE_128</option>
+                            <option value="EAN_13" th:selected="${profile.barcodeType == T(com.example.demo.model.BarcodeType).EAN_13}">EAN_13</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Photo (JPEG / PNG, max 5 MB)</label>
+                <input type="file" name="photo" id="f-photo" accept="image/png,image/jpeg"/>
+
+                <div class="actions">
+                    <button class="btn" type="submit">Save &amp; generate card</button>
+                    <a class="btn secondary" href="/profiles">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ============ LIVE PREVIEW ============ -->
+        <div class="panel">
+            <h2>Live preview</h2>
+            <p class="muted">Updates as you type. QR &amp; barcode are generated when you save.</p>
+            <div class="card-wrap">
+                <div class="idcard" id="card">
+                    <div class="hd" id="card-hd">
+                        <div class="org" id="card-org">ORGANIZATION</div>
+                        <div class="tag" id="card-tag"></div>
+                        <span class="pill" id="card-pill">ID</span>
+                    </div>
+                    <div class="bd">
+                        <div id="card-left">
+                            <img class="photo" id="card-photo"
+                                 th:src="${isEdit && profile.photoFileName != null} ? @{/media/photo/{id}(id=${profile.id})} : ''"
+                                 alt="" th:style="${isEdit && profile.photoFileName != null} ? 'display:block;' : 'display:none;'"/>
+                            <div class="placeholder" id="card-photo-ph" th:style="${isEdit && profile.photoFileName != null} ? 'display:none;' : 'display:block;'">No photo</div>
+                        </div>
+                        <div id="card-right">
+                            <div class="name" id="card-name">Full Name</div>
+                            <div class="sub" id="card-sub"></div>
+                            <div class="info" id="card-info"></div>
+                            <div class="assets">
+                                <div class="placeholder">QR &amp; barcode<br/>generated on save</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ft" id="card-ft">Verify after saving</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const $ = id => document.getElementById(id);
+        const card = $('card'), hd = $('card-hd'), ft = $('card-ft');
+
+        function render() {
+            const tplSel = $('f-template');
+            const opt = tplSel && tplSel.options[tplSel.selectedIndex];
+            const primary = opt ? opt.dataset.primary : '#1d4ed8';
+            const secondary = opt ? opt.dataset.secondary : '#e0e7ff';
+            const text = opt ? opt.dataset.text : '#111827';
+            const layout = opt ? opt.dataset.layout : 'VERTICAL';
+            const org = opt && opt.dataset.org ? opt.dataset.org : 'ORGANIZATION';
+            const tag = opt ? (opt.dataset.tag || '') : '';
+
+            card.classList.toggle('horizontal', layout === 'HORIZONTAL');
+            hd.style.background = primary;
+            ft.style.background = primary;
+            card.style.color = text;
+            $('card-org').textContent = org.toUpperCase();
+            $('card-tag').textContent = tag;
+
+            const pill = $('card-pill');
+            pill.style.color = primary;
+            const type = $('f-type').value;
+            pill.textContent = type === 'STUDENT' ? 'STUDENT ID' : (type === 'EMPLOYEE' ? 'EMPLOYEE ID' : 'MEMBER ID');
+
+            $('card-name').textContent = $('f-name').value || 'Full Name';
+            const title = $('f-title').value;
+            $('card-sub').textContent = title || (type.charAt(0) + type.slice(1).toLowerCase());
+
+            const info = $('card-info');
+            info.innerHTML = '';
+            const rows = [
+                ['Dept.', $('f-dept').value],
+                ['DOB', $('f-dob').value],
+                ['Blood', $('f-blood').value],
+                ['Barcode', $('f-barcode').value]
+            ];
+            rows.forEach(([k, v]) => {
+                if (!v) return;
+                const d = document.createElement('div');
+                d.innerHTML = '<span class="k" style="color:' + primary + '">' + k + '</span><span>' + v + '</span>';
+                info.appendChild(d);
+            });
+
+            const photo = $('card-photo');
+            photo.style.border = '2px solid ' + primary;
+            ft.textContent = 'Verify: /verify/...';
+        }
+
+        // photo preview
+        $('f-photo').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const photo = $('card-photo'), ph = $('card-photo-ph');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => { photo.src = ev.target.result; photo.style.display = 'block'; ph.style.display = 'none'; };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // if editing with existing photo
+        (function initPhoto() {
+            const photo = $('card-photo');
+            if (photo.getAttribute('src')) { photo.style.display = 'block'; $('card-photo-ph').style.display = 'none'; }
+        })();
+
+        document.getElementById('profileForm').addEventListener('input', render);
+        document.getElementById('profileForm').addEventListener('change', render);
+        render();
+    })();
+</script>
+</body>
+</html>
