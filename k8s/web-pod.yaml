@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: springboot-pod
+spec:
+  containers:
+  - name: springboot
+    image: demo-web:latest
+    ports:
+    - containerPort: 8080
+    - containerPort: 8443
+    - containerPort: 22
