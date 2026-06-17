@@ -1,0 +1,62 @@
+pipeline {
+agent any
+
+```
+triggers {
+    pollSCM('H/5 * * * *')
+}
+
+stages {
+
+    stage('Git Pull') {
+        steps {
+            checkout scm
+        }
+    }
+
+    stage('Build') {
+        steps {
+            sh './mvnw clean package -DskipTests'
+        }
+    }
+
+    stage('Test') {
+        steps {
+            sh './mvnw test -Dspring.profiles.active=test'
+        }
+    }
+
+    stage('Deploy') {
+        steps {
+            sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy.yml'
+        }
+    }
+}
+
+post {
+
+    failure {
+        emailext(
+            subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+            Build Failed
+
+            Job: ${env.JOB_NAME}
+            Build Number: ${env.BUILD_NUMBER}
+
+            Check Jenkins Console Output.
+            """,
+            recipientProviders: [
+                [$class: 'DevelopersRecipientProvider']
+            ],
+            to: 'srengty@gmail.com'
+        )
+    }
+
+    success {
+        echo 'Deployment completed successfully'
+    }
+}
+```
+
+}
