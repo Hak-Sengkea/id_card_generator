@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ID Card Preview</title>
+
+    <style>
+        .card{
+            width:400px;
+            border:2px solid black;
+            padding:20px;
+            margin:auto;
+        }
+
+        h2{
+            margin:0;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="card">
+
+    <h2>ID CARD</h2>
+
+    <hr>
+
+    <p>
+        <b>Name:</b>
+        <span th:text="${profile.fullName}"></span>
+    </p>
+
+    <p>
+        <b>Type:</b>
+        <span th:text="${profile.type}"></span>
+    </p>
+
+    <p>
+        <b>Department:</b>
+        <span th:text="${profile.department}"></span>
+    </p>
+
+    <p>
+        <b>Registration:</b>
+        <span th:text="${profile.registrationNumber}"></span>
+    </p>
+
+    <p>
+        <b>UUID:</b>
+        <span th:text="${profile.uuid}"></span>
+    </p>
+
+</div>
+
+</body>
+</html>

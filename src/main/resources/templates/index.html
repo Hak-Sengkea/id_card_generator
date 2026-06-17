@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ID Card Management</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            padding:40px;
+        }
+
+        form{
+            width:400px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+
+        input,select{
+            padding:10px;
+        }
+
+        button{
+            padding:10px;
+        }
+
+        .card{
+            margin-top:30px;
+            border:1px solid #ccc;
+            padding:20px;
+            width:350px;
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>ID Card Management</h1>
+
+<form action="/profiles/create" method="post">
+
+    <input
+            type="text"
+            name="fullName"
+            placeholder="Full Name">
+
+    <input
+            type="text"
+            name="department"
+            placeholder="Department">
+
+    <input
+            type="email"
+            name="email"
+            placeholder="Email">
+
+    <select name="type">
+        <option value="STUDENT">Student</option>
+        <option value="EMPLOYEE">Employee</option>
+        <option value="USER">User</option>
+    </select>
+
+    <button type="submit">
+        Create Profile
+    </button>
+
+</form>
+
+</body>
+</html>
