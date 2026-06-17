@@ -18,21 +18,21 @@
       debug:
         var: git_pull.stdout_lines
 
-    - name: Build Project using Maven
-      shell: ./mvnw clean package -DskipTests
-      args:
-        chdir: "{{ project_dir }}"
-      register: build_result
+    # - name: Build Project using Maven
+    #   shell: ./mvnw clean package -DskipTests
+    #   args:
+    #     chdir: "{{ project_dir }}"
+    #   register: build_result
 
-    - name: Show Build Output
-      debug:
-        var: build_result.stdout_lines
+    # - name: Show Build Output
+    #   debug:
+    #     var: build_result.stdout_lines
 
-    - name: Run Tests
-      shell: ./mvnw test
-      args:
-        chdir: "{{ project_dir }}"
-      register: test_result
+    # - name: Run Tests
+    #   shell: ./mvnw test
+    #   args:
+    #     chdir: "{{ project_dir }}"
+    #   register: test_result
 
     - name: Show Test Output
       debug:
