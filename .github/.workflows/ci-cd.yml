@@ -1,60 +1,59 @@
 name: Spring Boot CI/CD
 
 on:
-push:
-branches:
-- main
+  push:
+    branches:
+      - main
 
 jobs:
 
-build-test:
-runs-on: ubuntu-latest
+  build-test:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout Code
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  - name: Setup Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: 21
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
-  - name: Build
-    run: ./mvnw clean package -DskipTests
+      - name: Build
+        run: ./mvnw clean package -DskipTests
 
-  - name: Run Tests (SQLite)
-    run: ./mvnw test -Dspring.profiles.active=test
+      - name: Run Tests (SQLite)
+        run: ./mvnw test -Dspring.profiles.active=test
 
-  - name: Send Email on Failure
-    if: failure()
-    uses: dawidd6/action-send-mail@v3
-    with:
-      server_address: smtp.gmail.com
-      server_port: 587
-      username: ${{ secrets.EMAIL_USERNAME }}
-      password: ${{ secrets.EMAIL_PASSWORD }}
-      subject: Build Failed
-      to: srengty@gmail.com
-      from: ${{ secrets.EMAIL_USERNAME }}
-      body: |
-        Build failed for commit:
-        ${{ github.sha }}
+      - name: Send Email on Failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Build Failed
+          to: srengty@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            Build failed for commit:
+            ${{ github.sha }}
 
-deploy:
-needs: build-test
-runs-on: ubuntu-latest
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout Code
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  - name: Install Ansible
-    run: |
-      sudo apt update
-      sudo apt install -y ansible
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
 
-  - name: Run Ansible Playbook
-    run: |
-      ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
-
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
