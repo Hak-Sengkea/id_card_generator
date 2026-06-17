@@ -34,23 +34,23 @@
     #     chdir: "{{ project_dir }}"
     #   register: test_result
 
-    - name: Show Test Output
-      debug:
-        var: test_result.stdout_lines
+    # - name: Show Test Output
+    #   debug:
+    #     var: test_result.stdout_lines
 
-    - name: Backup MySQL Database
-      shell: >
-        docker exec B-Hak_Sengkea-db
-        mysqldump -uroot -p123 B-Hak_Sengkea-db
-        > backup.sql
-      args:
-        chdir: "{{ project_dir }}"
+    # - name: Backup MySQL Database
+    #   shell: >
+    #     docker exec B-Hak_Sengkea-db
+    #     mysqldump -uroot -p123 B-Hak_Sengkea-db
+    #     > backup.sql
+    #   args:
+    #     chdir: "{{ project_dir }}"
 
-    - name: Verify Backup Exists
-      stat:
-        path: "{{ project_dir }}/backup.sql"
-      register: backup_file
+    # - name: Verify Backup Exists
+    #   stat:
+    #     path: "{{ project_dir }}/backup.sql"
+    #   register: backup_file
 
-    - name: Show Backup Status
-      debug:
-        var: backup_file.stat.exists
+    # - name: Show Backup Status
+    #   debug:
+    #     var: backup_file.stat.exists
